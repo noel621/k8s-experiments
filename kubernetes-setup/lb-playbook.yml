@@ -1,0 +1,43 @@
+---
+- hosts: all
+  become: true
+  tasks:
+  - name: Update system to latest packages
+    apt:
+      upgrade: dist
+      update_cache: yes
+
+  - name: Install packages that allow apt to be used over HTTPS
+    apt:
+      name: "{{ packages }}"
+      state: present
+    vars:
+      packages:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg-agent
+      - software-properties-common
+      - net-tools
+
+  - name: Add HAPROXY repo
+    apt_repository: 
+      repo: ppa:vbernat/haproxy-2.1
+      state: present
+
+  - name: install HAProxy
+    apt:
+      name: haproxy
+      state: latest
+      update_cache: yes
+
+  - name: Generate HAProxy config file
+    template:
+      src: template/haproxy.j2
+      dest: /etc/haproxy/haproxy.cfg
+    notify:
+    - restart haproxy
+
+  handlers:
+    - name: restart haproxy
+      service: name=haproxy state=restarted
