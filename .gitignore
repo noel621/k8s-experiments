@@ -1,2 +1,5 @@
 exercises/
 .vagrant/
+mk400/
+*.cert
+*.key

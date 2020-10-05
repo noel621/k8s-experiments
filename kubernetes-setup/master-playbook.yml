@@ -96,7 +96,7 @@
       state: restarted
 
   - name: Initialize the Kubernetes cluster using kubeadm
-    command: kubeadm init --apiserver-advertise-address="{{ node_ip }}" --apiserver-cert-extra-sans="{{ node_ip }}"  --node-name k8s-master --pod-network-cidr={{ pod_cidr }} --service-cidr={{ service_cidr }}
+    command: kubeadm init --control-plane-endpont={{ cplane_endpoint_ip }} --apiserver-advertise-address="{{ node_ip }}" --apiserver-cert-extra-sans="{{ node_ip }}"  --node-name k8s-master --pod-network-cidr={{ pod_cidr }} --service-cidr={{ service_cidr }} --upload-certs
 
   - name: Setup kubeconfig for vagrant user
     command: "{{ item }}"

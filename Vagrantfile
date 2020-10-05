@@ -35,7 +35,7 @@ Vagrant.configure("2") do |config|
         end
     end
 
-    config.vm.define "k8s-master-1", primary: true  do |master|
+    config.vm.define "k8s-master", primary: true  do |master|
         master.vm.box = IMAGE_NAME
 #        master.vm.network :public_network, ip: "192.168.69.50", :dev => "br0", :mode => "bridge", :type => "bridge"
         master.vm.network :private_network, ip: "192.168.100.51"
@@ -46,6 +46,7 @@ Vagrant.configure("2") do |config|
                 node_ip: "192.168.100.51",
                 service_cidr: "10.254.254.0/24",
                 pod_cidr: "172.31.0.0/16",
+                cplane_endpoint_ip: "192.168.100.100"
             }
         end
     end
