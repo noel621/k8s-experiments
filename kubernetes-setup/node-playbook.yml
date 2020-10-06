@@ -95,8 +95,13 @@
       daemon_reload: yes
       state: restarted
 
-  - name: Copy the join command to server location
-    copy: src=/tmp/join-command dest=/tmp/join-command.sh mode=0777
+  - name: Copy the join command to server location (Worker Node)
+    copy: src=/tmp/node-join-command dest=/tmp/join-command.sh mode=0777
+    when: (is_controlplane is undefined) or (not is_controlplane)
+
+  - name: Copy the join command to server location (Control-Plane Node)
+    copy: src=/tmp//tmp/control-plane-join-command dest=/tmp/join-command.sh mode=0777
+    when: is_controlplane 
 
   - name: Join the node to cluster
     command: sh /tmp/join-command.sh

@@ -25,17 +25,18 @@ Vagrant.configure("2") do |config|
             ansible.extra_vars = {
                 node_ip: "192.168.100.100",
                 backend_servers: [
-                    { name: "k8s-master-0", ip: "192.168.100.50" },
-                    { name: "k8s-master-1", ip: "192.168.100.51" },
-                    { name: "k8s-master-2", ip: "192.168.100.52" },
-                    { name: "k8s-master-3", ip: "192.168.100.53" }
+                    { name: "master-0", ip: "192.168.100.50" },
+                    { name: "master-1", ip: "192.168.100.51" },
+                    { name: "master-2", ip: "192.168.100.52" },
+                    { name: "master-3", ip: "192.168.100.53" }
                 ],
                 listen_port: "6443",
             }
         end
     end
 
-    config.vm.define "k8s-master", primary: true  do |master|
+    #provision first master node
+    config.vm.define "master-1", primary: true  do |master|
         master.vm.box = IMAGE_NAME
 #        master.vm.network :public_network, ip: "192.168.69.50", :dev => "br0", :mode => "bridge", :type => "bridge"
         master.vm.network :private_network, ip: "192.168.100.51"
@@ -51,6 +52,24 @@ Vagrant.configure("2") do |config|
         end
     end
 
+    #provision rest of control plane
+    (2..N).each do |i|
+        config.vm.define "master-#{i}" do |node|
+            node.vm.box = IMAGE_NAME
+            #node.vm.network :public_network, ip: "192.168.69.#{i + 50}", :dev => "br0", :mode => "bridge", :type => "bridge"
+            node.vm.network :private_network, ip: "192.168.100.#{i + 60}"
+            node.vm.hostname = "node-#{i}"
+            node.vm.provision "ansible" do |ansible|
+                ansible.playbook = "kubernetes-setup/node-playbook.yml"
+                ansible.extra_vars = {
+                    node_ip: "192.168.100.#{i + 50}",
+                    is_controlplane: true,
+                }
+            end
+        end
+    end
+
+    #provision worker nodes
     (1..N).each do |i|
         config.vm.define "node-#{i}" do |node|
             node.vm.box = IMAGE_NAME

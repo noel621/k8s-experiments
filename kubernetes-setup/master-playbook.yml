@@ -121,13 +121,26 @@
     become: false
     command: kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/aio/deploy/recommended.yaml
 
-  - name: Generate join command
+  - name: Generate worker node join command
     command: kubeadm token create --print-join-command
     register: join_command
 
   - name: Copy join command to local file
-    local_action: copy content="{{ join_command.stdout_lines[0] }}" dest="/tmp/join-command"
+    local_action: copy content="{{ join_command.stdout_lines[0] }}" dest="/tmp/node-join-command"
     become: false
+
+  - name: Generate control-plane joinining certificate
+    command: kubeadm init phase upload-certs --upload-certs
+    register: cert_id
+
+  - name: Generate Control-Plane join command
+    command: kubeadm token create --print-join-command --certificate-key {{ cert_id.stdout_lines[2] }}
+    register: join_command
+
+  - name: copy control-plane joinining certificate ID
+    local_action: copy content="{{ join_command.stdout_lines[0] }}" dest="/tmp/control-plane-join-command"
+    become: false
+
 
   handlers:
     - name: docker status
