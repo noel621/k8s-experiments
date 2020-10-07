@@ -7,7 +7,7 @@
       name: "*"
       state: latest
       update_cache: yes
-    when: not do_update
+    when:  do_update
 
   - name: Install packages that allow apt to be used over HTTPS
     apt:
@@ -103,6 +103,14 @@
 
   - name: Copy the join command to server location (Control-Plane Node)
     copy: src=/tmp/control-plane-join-command dest=/tmp/join-command.sh mode=0777
+    when: is_controlplane 
+
+  - name: Add note IP to join command for control-plane etcd correct config
+    lineinfile:
+      path: '/tmp/join-command.sh'
+      backrefs: yes
+      regexp: "^(.*join.*)$"
+      line: '\1 --apiserver-advertise-address="{{ node_ip }}"'
     when: is_controlplane 
 
   - name: Join the node to cluster

@@ -6,7 +6,7 @@
     apt:
       upgrade: dist
       update_cache: yes
-      when: not do_update
+    when: do_update
 
   - name: Install packages that allow apt to be used over HTTPS
     apt:

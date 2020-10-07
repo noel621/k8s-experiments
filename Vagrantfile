@@ -42,7 +42,7 @@ Vagrant.configure("2") do |config|
         master.vm.box = IMAGE_NAME
 #        master.vm.network :public_network, ip: "192.168.69.50", :dev => "br0", :mode => "bridge", :type => "bridge"
         master.vm.network :private_network, ip: "192.168.100.51"
-        master.vm.hostname = "k8s-master-1"
+        master.vm.hostname = "master-1"
         master.vm.provision "ansible" do |ansible|
             ansible.playbook = "kubernetes-setup/master-playbook.yml"
             ansible.extra_vars = {
@@ -60,8 +60,8 @@ Vagrant.configure("2") do |config|
         config.vm.define "master-#{i}" do |node|
             node.vm.box = IMAGE_NAME
             #node.vm.network :public_network, ip: "192.168.69.#{i + 50}", :dev => "br0", :mode => "bridge", :type => "bridge"
-            node.vm.network :private_network, ip: "192.168.100.#{i + 60}"
-            node.vm.hostname = "node-#{i}"
+            node.vm.network :private_network, ip: "192.168.100.#{i + 50}"
+            node.vm.hostname = "master-#{i}"
             node.vm.provision "ansible" do |ansible|
                 ansible.playbook = "kubernetes-setup/node-playbook.yml"
                 ansible.extra_vars = {
