@@ -80,6 +80,7 @@ Vagrant.configure("2") do |config|
                 ansible.playbook = "kubernetes-setup/node-playbook.yml"
                 ansible.extra_vars = {
                     node_ip: "192.168.100.#{i + 60}",
+                    is_controlplane: false,
                 }
             end
         end
