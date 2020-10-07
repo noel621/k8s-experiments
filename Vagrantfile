@@ -1,6 +1,7 @@
 IMAGE_NAME = "generic/ubuntu2004"
 M = 3
 N = 3
+UPDATE_OS_TO_LATEST_PKG = false
 
 Vagrant.configure("2") do |config|
     config.ssh.insert_key = false
@@ -31,6 +32,7 @@ Vagrant.configure("2") do |config|
                     { name: "master-3", ip: "192.168.100.53" }
                 ],
                 listen_port: "6443",
+                do_update: UPDATE_OS_TO_LATEST_PKG,
             }
         end
     end
@@ -47,7 +49,8 @@ Vagrant.configure("2") do |config|
                 node_ip: "192.168.100.51",
                 service_cidr: "10.254.254.0/24",
                 pod_cidr: "172.31.0.0/16",
-                cplane_endpoint_ip: "192.168.100.100"
+                cplane_endpoint_ip: "192.168.100.100",
+                do_update: UPDATE_OS_TO_LATEST_PKG,
             }
         end
     end
@@ -64,6 +67,7 @@ Vagrant.configure("2") do |config|
                 ansible.extra_vars = {
                     node_ip: "192.168.100.#{i + 50}",
                     is_controlplane: true,
+                    do_update: UPDATE_OS_TO_LATEST_PKG,
                 }
             end
         end
@@ -81,6 +85,7 @@ Vagrant.configure("2") do |config|
                 ansible.extra_vars = {
                     node_ip: "192.168.100.#{i + 60}",
                     is_controlplane: false,
+                    do_update: UPDATE_OS_TO_LATEST_PKG,
                 }
             end
         end

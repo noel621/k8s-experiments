@@ -6,11 +6,13 @@
     apt:
       upgrade: dist
       update_cache: yes
+      when: not do_update
 
   - name: Install packages that allow apt to be used over HTTPS
     apt:
       name: "{{ packages }}"
       state: present
+      update_cache: yes
     vars:
       packages:
       - apt-transport-https
